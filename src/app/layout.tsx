@@ -1,0 +1,33 @@
+import type { Metadata } from "next";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import "./globals.css";
+
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+export const metadata: Metadata = {
+  title: "AutoWorks | Auto Repair & Car Care",
+  description:
+    "AutoWorks provides reliable auto repair, diagnostics, maintenance, and car care services with online appointment booking.",
+  openGraph: {
+    title: "AutoWorks | Auto Repair & Car Care",
+    description:
+      "Schedule trusted vehicle repair and maintenance services with AutoWorks.",
+    type: "website",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body className={`${plusJakarta.variable} antialiased`}>{children}</body>
+    </html>
+  );
+}
