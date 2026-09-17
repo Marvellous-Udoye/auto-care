@@ -1,4 +1,5 @@
-import { ArrowUpRight, Mail, MapPin, Phone, Zap } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight, Mail, MapPin, Phone, UserRound, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Container, Logo } from "@/components/external/autocare-shared";
 
@@ -13,6 +14,11 @@ export function AutocareFooter() {
             <li className="flex items-center gap-[15px] text-[15px] font-semibold leading-[1.65] text-[#858585]"><Phone className="text-[#ec3042]" size={17} />+234 708 908 2476</li>
             <li className="flex items-center gap-[15px] text-[15px] font-semibold leading-[1.65] text-[#858585]"><Mail className="text-[#ec3042]" size={17} />hello@autocare.com</li>
             <li className="flex items-center gap-[15px] text-[15px] font-semibold leading-[1.65] text-[#858585]"><Zap className="text-[#ec3042]" size={17} />www.useautocare.vercel.app</li>
+            <li>
+              <Link className="flex items-center gap-[15px] text-[15px] font-semibold leading-[1.65] text-[#858585] transition-colors hover:text-white" href="/login">
+                <UserRound className="text-[#ec3042]" size={17} />Staff Portal
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
