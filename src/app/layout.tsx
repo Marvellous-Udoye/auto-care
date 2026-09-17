@@ -8,16 +8,80 @@ const plusJakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700", "800"],
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "https://useautocare.vercel.app");
+
 export const metadata: Metadata = {
-  title: "AutoCare | Auto Repair & Car Care",
+  metadataBase: new URL(siteUrl),
+  applicationName: "AutoCare",
+  title: {
+    default: "AutoCare | Auto Repair & Car Care",
+    template: "%s | AutoCare",
+  },
   description:
-    "AutoCare provides reliable auto repair, diagnostics, maintenance, and car care services with online appointment booking.",
+    "Book trusted auto repair, diagnostics, maintenance, brake service, suspension repair, and car care appointments with AutoCare.",
+  keywords: [
+    "auto repair",
+    "car care",
+    "vehicle diagnostics",
+    "engine repair",
+    "brake repair",
+    "suspension repair",
+    "AutoCare",
+  ],
+  authors: [{ name: "AutoCare" }],
+  creator: "AutoCare",
+  publisher: "AutoCare",
+  alternates: {
+    canonical: "/",
+  },
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon", type: "image/png", sizes: "32x32" },
+    ],
+    apple: [{ url: "/apple-icon", type: "image/png", sizes: "180x180" }],
+  },
+  manifest: "/manifest.webmanifest",
   openGraph: {
     title: "AutoCare | Auto Repair & Car Care",
     description:
       "Schedule trusted vehicle repair and maintenance services with AutoCare.",
+    url: "/",
+    siteName: "AutoCare",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "AutoCare hero section preview with a red performance car",
+      },
+    ],
+    locale: "en_US",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "AutoCare | Auto Repair & Car Care",
+    description:
+      "Reliable auto repair, diagnostics, maintenance, and car care appointment booking.",
+    images: ["/twitter-image"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  category: "automotive",
 };
 
 export default function RootLayout({
