@@ -30,7 +30,7 @@ export function AutocareCtaAbout() {
           </div>
         </Container>
       </section>
-      <section className="section-animate bg-[#202020] py-[95px] pb-[150px] max-[700px]:py-[78px]">
+      <section id="about" className="section-animate bg-[#202020] py-[95px] pb-[150px] max-[700px]:py-[78px]">
         <Container className="grid grid-cols-[430px_1fr] gap-[160px] max-[1050px]:grid-cols-1 max-[1050px]:gap-[50px]">
           <div className="pt-20 max-[700px]:pt-0">
             <SectionHeading eyebrow="About Us" title="Our Reputation Speaks for Itself" />

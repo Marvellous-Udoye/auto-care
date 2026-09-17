@@ -1,3 +1,6 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import { Star } from "lucide-react";
 import { Container, SectionHeading } from "@/components/external/autocare-shared";
 
@@ -15,6 +18,16 @@ const testimonials = [
 ];
 
 export function AutocareTestimonials() {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const visibleTestimonials = useMemo(
+    () => testimonials.map((_, index) => testimonials[(activeIndex + index) % testimonials.length]),
+    [activeIndex],
+  );
+
+  function move(direction: 1 | -1) {
+    setActiveIndex((current) => (current + direction + testimonials.length) % testimonials.length);
+  }
+
   return (
     <section id="testimonials" className="section-animate overflow-hidden bg-[#292929] py-[110px] pb-[135px] max-[700px]:py-[78px]">
       <Container className="grid grid-cols-[415px_1fr] items-start gap-[185px] max-[1050px]:grid-cols-1 max-[1050px]:gap-[50px]">
@@ -23,14 +36,31 @@ export function AutocareTestimonials() {
           <p className="text-[15px] font-semibold leading-[1.65] text-[#858585]">
             Read what our satisfied customers have to say about our products and services
           </p>
-          <div className="mt-[205px] flex gap-[18px] text-[50px] font-extralight text-[#bdbdbd]" aria-hidden="true">
-            <span>←</span>
-            <span>→</span>
+          <div className="mt-[205px] flex gap-[18px] text-[50px] font-extralight text-[#bdbdbd]">
+            <button
+              className="transition-colors hover:text-white cursor-pointer"
+              type="button"
+              aria-label="Show previous testimonial"
+              onClick={() => move(-1)}
+            >
+              ←
+            </button>
+            <button
+              className="transition-colors hover:text-white cursor-pointer"
+              type="button"
+              aria-label="Show next testimonial"
+              onClick={() => move(1)}
+            >
+              →
+            </button>
           </div>
         </div>
         <div className="flex w-max gap-7 max-[1050px]:w-full max-[1050px]:overflow-x-auto">
-          {testimonials.map(([name, text, image]) => (
-            <article className="min-h-[410px] w-[400px] shrink-0 rounded-[9px] bg-[#f7f7f7] px-10 py-[54px] text-[#333] max-[700px]:w-[310px] max-[700px]:px-7 max-[700px]:py-[38px]" key={name}>
+          {visibleTestimonials.map(([name, text, image]) => (
+            <article
+              className="min-h-[410px] w-[400px] shrink-0 rounded-[9px] bg-[#f7f7f7] px-10 py-[54px] text-[#333] transition-transform duration-300 max-[700px]:w-[310px] max-[700px]:px-7 max-[700px]:py-[38px]"
+              key={name}
+            >
               <img className="mb-12 size-[88px] rounded-[5px] object-cover" src={image} alt={`${name} portrait`} />
               <p className="text-[15px] font-semibold leading-[1.65] text-[#777]">{text}</p>
               <h3 className="mt-7 mb-[9px] text-xl font-extrabold text-[#333]">{name}</h3>

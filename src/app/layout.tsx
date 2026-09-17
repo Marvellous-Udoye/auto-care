@@ -40,7 +40,6 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.ico" },
       { url: "/icon", type: "image/png", sizes: "32x32" },
     ],
     apple: [{ url: "/apple-icon", type: "image/png", sizes: "180x180" }],
@@ -54,7 +53,7 @@ export const metadata: Metadata = {
     siteName: "AutoCare",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/images/opengragh-image.png",
         width: 1200,
         height: 630,
         alt: "AutoCare hero section preview with a red performance car",
@@ -68,7 +67,7 @@ export const metadata: Metadata = {
     title: "AutoCare | Auto Repair & Car Care",
     description:
       "Reliable auto repair, diagnostics, maintenance, and car care appointment booking.",
-    images: ["/twitter-image"],
+    images: ["/images/opengragh-image.png"],
   },
   robots: {
     index: true,

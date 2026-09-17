@@ -3,7 +3,7 @@ import { Container, SectionHeading } from "@/components/external/autocare-shared
 
 export function AutocareWhy() {
   return (
-    <section id="about" className="section-animate bg-[#202020] pt-[45px] pb-[150px] max-[700px]:py-[78px]">
+    <section id="why-choose-us" className="section-animate bg-[#202020] pt-[45px] pb-[150px] max-[700px]:py-[78px]">
       <Container>
         <SectionHeading title="Why Choose Us?" centered>
           <strong className="mt-[25px] block text-[27px] font-medium text-[#ec3042]">

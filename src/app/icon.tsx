@@ -16,7 +16,7 @@ export default function Icon() {
           height: "100%",
           alignItems: "center",
           justifyContent: "center",
-          borderRadius: 8,
+          borderRadius: 999,
           background: "#ec3042",
           color: "#111",
           fontSize: 20,
@@ -24,7 +24,7 @@ export default function Icon() {
           fontFamily: "Arial, sans-serif",
         }}
       >
-        A
+        o
       </div>
     ),
     size,
