@@ -9,13 +9,13 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "AutoWorks | Auto Repair & Car Care",
+  title: "AutoCare | Auto Repair & Car Care",
   description:
-    "AutoWorks provides reliable auto repair, diagnostics, maintenance, and car care services with online appointment booking.",
+    "AutoCare provides reliable auto repair, diagnostics, maintenance, and car care services with online appointment booking.",
   openGraph: {
-    title: "AutoWorks | Auto Repair & Car Care",
+    title: "AutoCare | Auto Repair & Car Care",
     description:
-      "Schedule trusted vehicle repair and maintenance services with AutoWorks.",
+      "Schedule trusted vehicle repair and maintenance services with AutoCare.",
     type: "website",
   },
 };

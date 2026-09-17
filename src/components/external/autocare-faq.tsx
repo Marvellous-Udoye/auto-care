@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
+import { Container, SectionHeading } from "@/components/external/autocare-shared";
 
 const faqs = [
   {
@@ -26,41 +27,40 @@ const faqs = [
   },
 ];
 
-export function FaqSection() {
+export function AutocareFaq() {
   const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <section className="faq-section section-animate" id="faq">
-      <div className="site-container">
-        <div className="section-heading centered">
-          <p>FAQ</p>
-          <h2>Frequently Asked Questions</h2>
-        </div>
-        <div className="faq-grid">
+    <section className="section-animate border-b border-[#57272a] bg-[#292929] py-[120px] pb-[150px] max-[700px]:py-[78px]" id="faq">
+      <Container>
+        <SectionHeading eyebrow="FAQ" title="Frequently Asked Questions" centered />
+        <div className="mt-[70px] grid grid-cols-[490px_1fr] items-start gap-[90px] max-[1050px]:grid-cols-1 max-[1050px]:gap-[50px]">
           <img
+            className="h-[470px] w-full rounded-[10px] object-cover brightness-[0.65] grayscale max-[700px]:h-[310px]"
             src="https://images.unsplash.com/photo-1599256630445-67b5772b1204?auto=format&fit=crop&w=900&q=80"
             alt="Mechanic working behind a car"
           />
-          <div className="faq-list">
+          <div>
             {faqs.map((faq, index) => {
               const isOpen = index === openIndex;
               return (
-                <div className="faq-item" key={faq.question}>
+                <div className="border-b border-[#626262]" key={faq.question}>
                   <button
+                    className="flex w-full items-center justify-between border-0 bg-transparent py-[30px] text-left text-xl font-extrabold text-white"
                     type="button"
                     aria-expanded={isOpen}
                     onClick={() => setOpenIndex(isOpen ? -1 : index)}
                   >
                     {faq.question}
-                    {isOpen ? <Minus size={20} /> : <Plus size={20} />}
+                    {isOpen ? <Minus className="text-[#ec3042]" size={20} /> : <Plus className="text-[#ec3042]" size={20} />}
                   </button>
-                  {isOpen ? <p>{faq.answer}</p> : null}
+                  {isOpen ? <p className="-mt-3 mb-7 text-sm font-semibold leading-[1.65] text-[#858585]">{faq.answer}</p> : null}
                 </div>
               );
             })}
           </div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }
