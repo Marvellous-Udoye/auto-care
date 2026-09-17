@@ -15,7 +15,7 @@ The codebase is organized so the SPA landing page remains thin and section-drive
 - Auto repair service sections and appointment CTA
 - Blog preview, testimonials, FAQ, footer, and brand/service content
 - SEO metadata for search engines and social sharing
-- Open Graph and Twitter/X preview image routes
+- Open Graph and Twitter/X preview metadata
 - Favicon and Apple touch icon routes
 - Sitemap, robots, and web app manifest
 - Tailwind CSS styling with minimal global CSS
@@ -36,9 +36,7 @@ The codebase is organized so the SPA landing page remains thin and section-drive
 src/
   app/
     page.tsx                 # SPA composition
-    layout.tsx               # Metadata, font, root layout
-    opengraph-image.tsx      # Social preview image
-    twitter-image.tsx        # Twitter/X preview image
+    layout.tsx               # Metadata, font, root layout, and social preview configuration
     icon.tsx                 # Favicon image route
     apple-icon.tsx           # Apple touch icon route
     manifest.ts              # Web app manifest
@@ -106,7 +104,7 @@ The app includes:
 - Sitemap and robots configuration
 - Web app manifest
 
-The social preview image is generated from `src/app/opengraph-image.tsx` and uses the AutoCare hero visual system.
+The social preview image is served directly from `public/images/opengraph-image.png` for Slack, WhatsApp, and Twitter/X cards.
 
 ## Dashboard Direction
 
