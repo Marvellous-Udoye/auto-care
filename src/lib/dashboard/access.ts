@@ -5,11 +5,11 @@ export function canUseBranch(user: DashboardUser, branchId: string) {
 }
 
 export function canWrite(user: DashboardUser) {
-  return user.role !== "viewer";
+  return user.role === "manager" || user.role === "staff";
 }
 
 export function canManageTeam(user: DashboardUser) {
-  return user.role === "super_admin";
+  return user.role === "manager";
 }
 
 export function visibleFeedbackForUser(user: DashboardUser, feedback: FeedbackRecord[]) {

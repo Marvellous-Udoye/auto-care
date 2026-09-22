@@ -34,7 +34,7 @@ function TabsList({ className, ...props }: React.ComponentProps<"div"> & { activ
     <div
       data-slot="tabs-list"
       data-active-value={activeValue}
-      className={cn("inline-flex rounded-[12px] border border-[#3a3a3a] bg-[#202020] p-1", className)}
+      className={cn("inline-flex rounded-full border border-[#dce3ee] bg-white p-1", className)}
       {...rest}
     >
       {React.Children.map(rest.children, (child) =>
@@ -66,8 +66,8 @@ function TabsTrigger({
       data-slot="tabs-trigger"
       type="button"
       className={cn(
-        "h-9 rounded-[10px] px-4 text-[13px] font-extrabold text-[#858585] transition-colors hover:text-white",
-        active && "bg-[#ec3042] text-white shadow-[0_12px_24px_rgb(236_48_66/18%)]",
+        "h-9 cursor-pointer rounded-full px-4 text-sm font-semibold text-[#7b8190] transition-colors hover:bg-[#f3f6fb] hover:text-[#111827]",
+        active && "bg-[#fff1f2] text-[#ec3042]",
         className,
       )}
       onClick={() => onValueChange?.(value)}

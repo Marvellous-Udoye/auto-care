@@ -24,7 +24,7 @@ export function DateRangePicker() {
         <Button
           type="button"
           variant="outline"
-          className="mt-2 h-11 w-full justify-start rounded-[12px] border-[#3a3a3a] bg-[#030303] px-3.5 text-[14px] font-semibold text-white hover:bg-white/[0.04]"
+          className="h-10 w-full justify-start rounded-full border-[#dce3ee] bg-white px-3 text-sm font-medium text-[#111827] hover:bg-[#f7f8fa]"
         >
           <CalendarDays className="size-4 text-[#ec3042]" />
           {range}
@@ -36,7 +36,7 @@ export function DateRangePicker() {
           <button
             key={item}
             type="button"
-            className="flex h-11 items-center justify-between rounded-[12px] border border-[#3a3a3a] bg-[#030303] px-4 text-left text-[14px] font-semibold text-white transition-colors hover:border-[#ec3042]"
+            className="flex h-10 items-center justify-between rounded-lg bg-[#f7f8fa] px-4 text-left text-sm font-medium text-[#111827] transition-colors hover:bg-[#fff1f2]"
             onClick={() => setRange(item)}
           >
             {item}
@@ -45,7 +45,7 @@ export function DateRangePicker() {
         ))}
       </div>
       <DialogActions>
-        <Button className="rounded-[12px] bg-[#ec3042] font-extrabold text-white hover:bg-[#ec3042]/90">Apply range</Button>
+        <Button className="rounded-full bg-[#ec3042] px-5 font-semibold text-white hover:bg-[#d92b3b]">Apply range</Button>
       </DialogActions>
     </Dialog>
   );

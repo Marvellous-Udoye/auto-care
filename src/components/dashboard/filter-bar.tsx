@@ -9,9 +9,9 @@ export function FilterBar() {
   const locked = currentDashboardUser.branch_scope !== "all";
 
   return (
-    <div className="mb-6 grid gap-4 rounded-[14px] border border-[#3a3a3a] bg-[#111111] p-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+    <div className="mb-5 grid gap-4 rounded-[18px] bg-white p-5 md:grid-cols-[1fr_1fr_auto] md:items-end">
       <div>
-        <Label>Branch</Label>
+        <Label className="mb-2 block">Branch</Label>
         <Select disabled={locked} defaultValue={locked ? String(currentDashboardUser.branch_scope) : "all"}>
           <SelectTrigger className="mt-2">
             <SelectValue placeholder="Select branch" />
@@ -27,11 +27,11 @@ export function FilterBar() {
         </Select>
       </div>
       <div>
-        <Label>Date range</Label>
+        <Label className="mb-2 block">Date range</Label>
         <DateRangePicker />
       </div>
-      <p className="text-[12px] font-semibold leading-relaxed text-[#858585]">
-        {locked ? "Scoped roles are locked to their assigned branch." : "Super admins can review all branches or drill down."}
+      <p className="rounded-[14px] bg-[#f7f8fa] px-4 py-3 text-sm font-medium leading-relaxed text-[#7b8190]">
+        {locked ? "Staff are locked to their assigned branch." : "Managers can review all branches or drill down."}
       </p>
     </div>
   );

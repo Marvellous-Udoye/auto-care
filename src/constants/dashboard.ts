@@ -1,7 +1,7 @@
 export type FeedbackChannel = "post_visit" | "website";
 export type Sentiment = "positive" | "negative";
 export type FeedbackStatus = "ready_to_post" | "private_queue" | "manager_alert" | "needs_review";
-export type DashboardRole = "super_admin" | "admin" | "viewer" | "marketer";
+export type DashboardRole = "manager" | "staff";
 
 export type Branch = {
   id: string;
@@ -52,7 +52,7 @@ export const currentDashboardUser: DashboardUser = {
   id: "usr_001",
   name: "Ada Okafor",
   email: "ada@autocare.com",
-  role: "super_admin",
+  role: "manager",
   branch_scope: "all",
 };
 
@@ -233,21 +233,21 @@ export const dashboardUsers: DashboardUser[] = [
     id: "usr_002",
     name: "Nora Bello",
     email: "nora@autocare.com",
-    role: "admin",
+    role: "manager",
     branch_scope: "br_abuja",
   },
   {
     id: "usr_003",
     name: "Femi Cole",
     email: "femi@autocare.com",
-    role: "marketer",
+    role: "staff",
     branch_scope: "all",
   },
   {
     id: "usr_004",
     name: "Tara Williams",
     email: "tara@autocare.com",
-    role: "viewer",
+    role: "staff",
     branch_scope: "br_lagos_main",
   },
 ];

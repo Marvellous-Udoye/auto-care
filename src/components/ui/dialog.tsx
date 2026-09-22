@@ -22,14 +22,14 @@ function Dialog({
     <>
       <span onClick={() => setOpen(true)}>{trigger}</span>
       {open ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/65 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-xl rounded-[14px] border border-[#3a3a3a] bg-[#030303] p-5 shadow-2xl">
+        <div className="fixed inset-0 z-50 grid place-items-center bg-black/35 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-[18px] bg-white p-6 shadow-[rgba(16,24,40,0.18)_0px_24px_80px_0px]">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-xl font-extrabold text-white">{title}</h2>
-                {description ? <p className="mt-1 text-[13px] font-semibold leading-relaxed text-[#858585]">{description}</p> : null}
+                <h2 className="text-xl font-semibold text-[#111827]">{title}</h2>
+                {description ? <p className="mt-1 text-sm font-medium leading-[1.5] text-[#7b8190]">{description}</p> : null}
               </div>
-              <Button variant="ghost" size="icon" className="text-[#858585] hover:text-white" onClick={() => setOpen(false)} aria-label="Close dialog">
+              <Button variant="ghost" size="icon" className="rounded-full text-[#7b8190] hover:bg-[#f3f6fb] hover:text-[#111827]" onClick={() => setOpen(false)} aria-label="Close dialog">
                 <X className="size-4" />
               </Button>
             </div>
