@@ -34,7 +34,7 @@ function SelectTrigger({
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn(
-        "flex h-10 w-full items-center justify-between gap-3 rounded-[10px] border border-[#e8eaee] bg-white px-3 text-[13px] font-medium text-[#111827] outline-none transition-colors hover:border-[#cfd5df] focus:border-[#ec3042] disabled:cursor-not-allowed disabled:opacity-55",
+        "flex h-10 w-full items-center justify-between gap-3 rounded-[12px] border border-[#3a3a3a] bg-[#202020] px-3 text-[13px] font-semibold text-white outline-none transition-colors hover:border-[#626262] focus:border-[#ec3042] disabled:cursor-not-allowed disabled:opacity-55",
         className,
       )}
       {...props}
@@ -63,7 +63,7 @@ function SelectContent({
         data-slot="select-content"
         position={position}
         className={cn(
-          "z-50 min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-[14px] border border-[#e8eaee] bg-white p-1 text-[#111827] shadow-[0_18px_50px_rgba(16,24,40,0.12)]",
+          "z-50 min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-[14px] border border-[#3a3a3a] bg-[#292929] p-1 text-white shadow-[0_18px_50px_rgba(0,0,0,0.35)]",
           position === "popper" && "translate-y-1",
           className,
         )}
@@ -84,7 +84,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex min-h-9 cursor-pointer select-none items-center rounded-[10px] py-2 pl-8 pr-3 text-[13px] font-medium text-[#111827] outline-none transition-colors focus:bg-[#f4f7fb] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+        "relative flex min-h-9 cursor-pointer select-none items-center rounded-[10px] py-2 pl-8 pr-3 text-[13px] font-semibold text-white outline-none transition-colors focus:bg-white/[0.06] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         className,
       )}
       {...props}

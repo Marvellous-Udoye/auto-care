@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
+import { DashboardDataProvider } from "@/components/dashboard/dashboard-data-provider";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
 export const metadata: Metadata = {
@@ -21,7 +22,9 @@ export const metadata: Metadata = {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={null}>
-      <DashboardShell>{children}</DashboardShell>
+      <DashboardDataProvider>
+        <DashboardShell>{children}</DashboardShell>
+      </DashboardDataProvider>
     </Suspense>
   );
 }

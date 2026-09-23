@@ -17,7 +17,7 @@ export function MetricCard({
   tone?: "neutral" | "positive" | "negative" | "review";
 }) {
   const tones = {
-    neutral: "bg-[#f3f6fb] text-[#111827]",
+    neutral: "bg-white/[0.06] text-white",
     positive: "bg-[#d9fbef] text-[#0f8a5f]",
     negative: "bg-[#ffe8ec] text-[#d92d20]",
     review: "bg-[#fff4d6] text-[#b7791f]",
@@ -32,8 +32,8 @@ export function MetricCard({
           </span>
           {hint ? <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8a91a0]">{hint}</span> : null}
         </div>
-        <p className="mt-6 text-[32px] font-semibold leading-none tracking-[-0.03em] text-[#111827]">{value}</p>
-        <p className="mt-2 text-[13px] font-medium leading-relaxed text-[#7b8190]">{label}</p>
+        <p className="mt-6 text-[32px] font-extrabold leading-none tracking-[-0.03em] text-white">{value}</p>
+        <p className="mt-2 text-[13px] font-semibold leading-relaxed text-[#858585]">{label}</p>
       </CardContent>
     </Card>
   );

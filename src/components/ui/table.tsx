@@ -22,7 +22,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
   return (
     <tr
       data-slot="table-row"
-      className={cn("border-b border-[#edf0f4] transition-colors hover:bg-[#f8fafc]", className)}
+      className={cn("border-b border-[#3a3a3a] transition-colors hover:bg-white/[0.04]", className)}
       {...props}
     />
   );
@@ -32,14 +32,14 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   return (
     <th
       data-slot="table-head"
-      className={cn("h-10 px-4 text-left align-middle text-[11px] font-semibold uppercase tracking-[0.02em] text-[#8a91a0]", className)}
+      className={cn("h-10 px-4 text-left align-middle text-[11px] font-extrabold uppercase tracking-[0.08em] text-[#858585]", className)}
       {...props}
     />
   );
 }
 
 function TableCell({ className, ...props }: React.ComponentProps<"td">) {
-  return <td data-slot="table-cell" className={cn("px-4 py-3 align-middle text-[13px] font-medium text-[#344054]", className)} {...props} />;
+  return <td data-slot="table-cell" className={cn("px-4 py-3 align-middle text-[13px] font-semibold text-[#d8d8d8]", className)} {...props} />;
 }
 
 export { Table, TableBody, TableCell, TableHead, TableHeader, TableRow };
