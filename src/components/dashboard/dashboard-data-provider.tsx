@@ -130,7 +130,23 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
       const { data: userRows, error: userError } = await userQuery;
       if (userError) throw userError;
       const activeUser = userRows?.[0] as DashboardUser | undefined;
-      if (!activeUser) throw new Error("No dashboard user found for this environment.");
+      if (!activeUser) {
+        const { data: branchRows, error: branchesError } = await client
+          .from("branches")
+          .select("id,name,city,manager_email,created_at")
+          .order("created_at", { ascending: true })
+          .limit(1);
+
+        if (branchesError) throw branchesError;
+
+        setUser(null);
+        setBranch((branchRows?.[0] as Branch | undefined) ?? null);
+        setFeedback([]);
+        setDrafts([]);
+        setAlerts([]);
+        setTeamUsers([]);
+        return;
+      }
 
       const { data: branchData, error: branchError } = await client
         .from("branches")
@@ -202,7 +218,8 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
       canManage,
       configMissing: !hasSupabaseConfig,
       async createJobComplete(input) {
-        if (!user) throw new Error("No dashboard user is loaded.");
+        const branchId = user?.branch_id ?? branch?.id;
+        if (!branchId) throw new Error("Create a branch in Supabase before completing jobs.");
         const webhookUrl = process.env.NEXT_PUBLIC_N8N_JOB_COMPLETE_WEBHOOK_URL;
         if (!webhookUrl) throw new Error("NEXT_PUBLIC_N8N_JOB_COMPLETE_WEBHOOK_URL is not configured.");
 
@@ -210,7 +227,7 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            branch_id: user.branch_id,
+            branch_id: branchId,
             job_id: input.jobId,
             phone: input.phone,
           }),
