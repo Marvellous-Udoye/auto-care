@@ -7,6 +7,7 @@ import { AlertTriangle, CheckCircle2, Clipboard, Send } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/components/ui/toaster";
 import { SentimentBadge, SeverityBadge } from "@/components/dashboard/status-badge";
 import { useDashboardData, type FeedbackRecord, type FeedbackStatus } from "@/components/dashboard/dashboard-data-provider";
 
@@ -35,25 +36,49 @@ export function FeedbackQueuePage() {
     .filter((record) => matchesQuery(record, query));
 
   async function handleCopy(record: FeedbackRecord) {
-    await navigator.clipboard.writeText(record.raw_text ?? "");
-    setMessage("Copied feedback for publishing.");
+    try {
+      await navigator.clipboard.writeText(record.raw_text ?? "");
+      setMessage("Copied feedback for publishing.");
+      toast.success("Copied for publishing", { description: "The customer message is ready to paste into a public review channel." });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unable to copy feedback.";
+      toast.error("Copy failed", { description: errorMessage });
+    }
   }
 
   async function handleDraftSave(record: FeedbackRecord) {
-    await updateDraft(record.id, draftEdits[record.id] ?? drafts.find((draft) => draft.feedback_id === record.id)?.draft_text ?? "");
-    setMessage("Draft updated.");
+    try {
+      await updateDraft(record.id, draftEdits[record.id] ?? drafts.find((draft) => draft.feedback_id === record.id)?.draft_text ?? "");
+      setMessage("Draft updated.");
+      toast.success("Draft updated", { description: "The private response draft was saved." });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unable to save draft.";
+      toast.error("Draft save failed", { description: errorMessage });
+    }
   }
 
   async function handleMarkSent(record: FeedbackRecord) {
-    await markDraftSent(record.id);
-    setMessage("Draft marked as sent.");
+    try {
+      await markDraftSent(record.id);
+      setMessage("Draft marked as sent.");
+      toast.success("Draft marked as sent", { description: "AutoCare recorded this follow-up as handled." });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unable to mark draft as sent.";
+      toast.error("Update failed", { description: errorMessage });
+    }
   }
 
   async function handleAcknowledge(record: FeedbackRecord) {
     const alert = alerts.find((item) => item.feedback_id === record.id);
     if (!alert) return;
-    await markAlertAcknowledged(alert.id);
-    setMessage("Alert acknowledged.");
+    try {
+      await markAlertAcknowledged(alert.id);
+      setMessage("Alert acknowledged.");
+      toast.success("Alert acknowledged", { description: "The manager alert has been marked as reviewed." });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unable to acknowledge alert.";
+      toast.error("Acknowledge failed", { description: errorMessage });
+    }
   }
 
   return (

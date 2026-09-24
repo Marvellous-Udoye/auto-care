@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { toast } from "@/components/ui/toaster";
 import { useDashboardData, type DashboardRole } from "@/components/dashboard/dashboard-data-provider";
 
 export function TeamPage() {
@@ -27,11 +28,28 @@ export function TeamPage() {
   });
 
   async function handleInvite() {
-    await inviteUser({ name, email, role });
-    setName("");
-    setEmail("");
-    setRole("staff");
-    setMessage("Team member added.");
+    try {
+      await inviteUser({ name, email, role });
+      setName("");
+      setEmail("");
+      setRole("staff");
+      setMessage("Team member added.");
+      toast.success("Team member added", { description: `${name} can now be scoped to this AutoCare branch.` });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unable to add team member.";
+      toast.error("Invite failed", { description: errorMessage });
+    }
+  }
+
+  async function handleRemove(userId: string, userName: string) {
+    try {
+      await removeUser(userId);
+      setMessage("Team member removed.");
+      toast.success("Team member removed", { description: `${userName} was removed from this branch dashboard.` });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unable to remove team member.";
+      toast.error("Remove failed", { description: errorMessage });
+    }
   }
 
   if (!canManage) {
@@ -108,7 +126,7 @@ export function TeamPage() {
                 <TableCell><Badge variant={user.role === "manager" ? "default" : "neutral"}>{user.role}</Badge></TableCell>
                 <TableCell>{branch?.name ?? user.branch_id}</TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="icon-sm" className="rounded-full text-[#858585] hover:bg-white/[0.06] hover:text-white" aria-label={`Remove ${user.name}`} onClick={() => void removeUser(user.id)}>
+                  <Button variant="ghost" size="icon-sm" className="rounded-full text-[#858585] hover:bg-white/[0.06] hover:text-white" aria-label={`Remove ${user.name}`} onClick={() => void handleRemove(user.id, user.name)}>
                     <Trash2 className="size-4" />
                   </Button>
                 </TableCell>

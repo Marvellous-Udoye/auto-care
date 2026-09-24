@@ -7,6 +7,7 @@ import { CheckCircle2, ShieldQuestion } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "@/components/ui/toaster";
 import { useDashboardData, type FeedbackRecord, type Sentiment } from "@/components/dashboard/dashboard-data-provider";
 
 function matchesQuery(record: FeedbackRecord, query: string) {
@@ -28,8 +29,16 @@ export function ReviewPage() {
       sentiment: record.sentiment ?? "negative",
       severity: (record.severity ?? 3) as 1 | 2 | 3 | 4 | 5,
     };
-    await routeReview(record.id, override);
-    setMessage("Feedback routed.");
+    try {
+      await routeReview(record.id, override);
+      setMessage("Feedback routed.");
+      toast.success("Feedback routed", {
+        description: `Moved to the ${override.sentiment === "positive" ? "ready-to-post" : override.severity >= 4 ? "manager alerts" : "private queue"} workflow.`,
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Unable to route feedback.";
+      toast.error("Routing failed", { description: errorMessage });
+    }
   }
 
   return (

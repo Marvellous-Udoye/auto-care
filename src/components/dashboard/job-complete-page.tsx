@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toast } from "@/components/ui/toaster";
 import { useDashboardData } from "@/components/dashboard/dashboard-data-provider";
 
 function generateJobId() {
@@ -39,8 +40,13 @@ export function JobCompletePage() {
       setJobId(generateJobId());
       setPhone("");
       setMessage("Job completed. The feedback request automation has been triggered.");
+      toast.success("Feedback request triggered", {
+        description: "The completed job was sent to the AutoCare automation workflow.",
+      });
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to trigger the feedback workflow.");
+      const errorMessage = error instanceof Error ? error.message : "Unable to trigger the feedback workflow.";
+      setMessage(errorMessage);
+      toast.error("Could not complete job", { description: errorMessage });
     } finally {
       setSubmitting(false);
     }
