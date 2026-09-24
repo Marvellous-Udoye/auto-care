@@ -58,6 +58,7 @@ export function FeedbackQueuePage() {
   }
 
   async function handleMarkSent(record: FeedbackRecord) {
+    if (!window.confirm("Mark this response as sent? This records the follow-up as handled.")) return;
     try {
       await markDraftSent(record.id);
       setMessage("Draft marked as sent.");
@@ -71,6 +72,7 @@ export function FeedbackQueuePage() {
   async function handleAcknowledge(record: FeedbackRecord) {
     const alert = alerts.find((item) => item.feedback_id === record.id);
     if (!alert) return;
+    if (!window.confirm("Acknowledge this manager alert? This confirms the urgent issue has been reviewed.")) return;
     try {
       await markAlertAcknowledged(alert.id);
       setMessage("Alert acknowledged.");

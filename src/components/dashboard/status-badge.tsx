@@ -7,7 +7,14 @@ export function SentimentBadge({ sentiment }: { sentiment: Sentiment }) {
 
 export function StatusBadge({ status }: { status: FeedbackStatus }) {
   const variant = status === "ready_to_post" ? "positive" : status === "needs_review" ? "review" : status === "manager_alert" ? "negative" : "neutral";
-  const label = status.replaceAll("_", " ");
+  const labels: Record<FeedbackStatus, string> = {
+    awaiting_reply: "Awaiting Reply",
+    manager_alert: "Manager Alert",
+    needs_review: "Needs Review",
+    private_queue: "Private Queue",
+    ready_to_post: "Ready to Post",
+  };
+  const label = labels[status];
   return <Badge variant={variant}>{label}</Badge>;
 }
 

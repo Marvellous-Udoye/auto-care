@@ -5,7 +5,6 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
-  BarChart3,
   Bell,
   CalendarDays,
   ChevronDown,
@@ -18,7 +17,6 @@ import {
   Search,
   Settings,
   Users,
-  Wrench,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -31,22 +29,24 @@ const SIDEBAR_CLOSED = 82;
 const HEADER_HEIGHT = 72;
 const navGroups = [
   {
-    label: "GENERAL",
+    label: "MAIN",
     items: [
-      { href: "/dashboard", label: "Dashboard", icon: Home },
+      { href: "/dashboard", label: "Overview", icon: Home },
       { href: "/dashboard/job-complete", label: "Job Complete", icon: FileText },
-      { href: "/dashboard/feedback", label: "Feedback Queue", icon: CalendarDays },
-      { href: "/dashboard/review", label: "Needs Review", icon: ClipboardCheck },
-      { href: "/dashboard/branches", label: "Branch View", icon: Wrench },
-      { href: "/dashboard/team", label: "Team & Staff", icon: Users },
     ],
   },
   {
-    label: "OPERATIONS",
+    label: "FEEDBACK",
     items: [
-      { href: "/dashboard/feedback", label: "WhatsApp Logs", icon: Bell, chip: "NEW" },
-      { href: "/dashboard/branches", label: "Analytics", icon: BarChart3 },
-      { href: "/dashboard/profile", label: "Settings", icon: Settings },
+      { href: "/dashboard/feedback", label: "Queues", icon: CalendarDays },
+      { href: "/dashboard/review", label: "Needs Review", icon: ClipboardCheck },
+    ],
+  },
+  {
+    label: "MANAGEMENT",
+    items: [
+      { href: "/dashboard/team", label: "Team", icon: Users },
+      { href: "/dashboard/profile", label: "Profile", icon: Settings },
     ],
   },
 ];
@@ -54,10 +54,9 @@ const navGroups = [
 const pageTitles: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/dashboard/job-complete": "Job Complete",
-  "/dashboard/feedback": "Feedback Queue",
+  "/dashboard/feedback": "Feedback",
   "/dashboard/review": "Needs Review",
-  "/dashboard/branches": "Branches",
-  "/dashboard/team": "Team & Staff",
+  "/dashboard/team": "Team",
   "/dashboard/profile": "Profile",
 };
 
@@ -241,10 +240,8 @@ function MobileSidebar({
 }
 
 function Topbar({
-  sidebarWidth,
   onOpenMobileSidebar,
 }: {
-  sidebarWidth: number;
   onOpenMobileSidebar: () => void;
 }) {
   const { branch } = useDashboardData();
@@ -291,9 +288,9 @@ function Topbar({
           placeholder="Search feedback, phone or job ID"
         />
       </div>
-      <button className="hidden size-10 place-items-center rounded-full border border-[#3a3a3a] bg-[#202020] text-white transition hover:text-[#ec3042] sm:grid" aria-label="View notifications">
+      <Link href="/dashboard/feedback" className="hidden size-10 place-items-center rounded-full border border-[#3a3a3a] bg-[#202020] text-white transition hover:text-[#ec3042] sm:grid" aria-label="View manager alerts">
         <Bell className="size-4" />
-      </button>
+      </Link>
       <Button asChild className="h-10 rounded-full bg-[#ec3042] px-4 text-[13px] font-semibold text-white shadow-[0_8px_18px_rgba(236,48,66,0.25)] hover:bg-[#d92b3b] md:px-5">
         <Link href="/dashboard/job-complete"><Plus className="size-4" /> Complete Job</Link>
       </Button>
@@ -316,7 +313,7 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
       </div>
       <MobileSidebar open={mobileSidebarOpen} onClose={() => setMobileSidebarOpen(false)} />
-      <Topbar sidebarWidth={sidebarWidth} onOpenMobileSidebar={() => setMobileSidebarOpen(true)} />
+      <Topbar onOpenMobileSidebar={() => setMobileSidebarOpen(true)} />
       <main
         className="min-h-screen px-4 pb-8 pt-[96px] transition-[margin-left] duration-300 md:ml-[var(--dashboard-sidebar-offset)] md:px-6"
       >

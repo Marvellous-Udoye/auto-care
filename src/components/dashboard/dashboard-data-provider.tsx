@@ -2,8 +2,6 @@
 
 import * as React from "react";
 
-import { hasSupabaseConfig, supabase } from "@/lib/supabase/client";
-
 export type FeedbackChannel = "post_visit" | "website";
 export type Sentiment = "positive" | "negative";
 export type FeedbackStatus = "awaiting_reply" | "needs_review" | "ready_to_post" | "private_queue" | "manager_alert";
@@ -84,17 +82,37 @@ type DashboardContextValue = {
 };
 
 const DashboardDataContext = React.createContext<DashboardContextValue | null>(null);
+const DASHBOARD_API = "/api/dashboard";
 
-function assertSupabase() {
-  if (!supabase) {
-    throw new Error("Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
-  }
-  return supabase;
+type DashboardPayload = {
+  alerts: AlertRecord[];
+  branch: Branch | null;
+  branches: Branch[];
+  drafts: DraftResponse[];
+  feedback: FeedbackRecord[];
+  teamUsers: DashboardUser[];
+  user: DashboardUser | null;
+};
+
+async function readDashboardPayload() {
+  const response = await fetch(DASHBOARD_API, {
+    cache: "no-store",
+    credentials: "same-origin",
+  });
+  const payload = await response.json();
+  if (!response.ok) throw new Error(payload.error ?? "Unable to load dashboard data.");
+  return payload as DashboardPayload;
 }
 
-function routeFor(sentiment: Sentiment, severity: number): FeedbackStatus {
-  if (sentiment === "positive") return "ready_to_post";
-  return severity >= 4 ? "manager_alert" : "private_queue";
+async function sendDashboardAction(body: Record<string, unknown>) {
+  const response = await fetch(DASHBOARD_API, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    body: JSON.stringify(body),
+  });
+  const payload = await response.json();
+  if (!response.ok) throw new Error(payload.error ?? "Unable to complete dashboard action.");
 }
 
 export function DashboardDataProvider({ children }: { children: React.ReactNode }) {
@@ -113,85 +131,14 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
     setError(null);
 
     try {
-      const client = assertSupabase();
-      const configuredEmail = process.env.NEXT_PUBLIC_DASHBOARD_USER_EMAIL;
-      let userQuery = client
-        .from("dashboard_users")
-        .select("id,name,email,role,branch_id,created_at")
-        .order("created_at", { ascending: true })
-        .limit(1);
-
-      if (configuredEmail) {
-        userQuery = client
-          .from("dashboard_users")
-          .select("id,name,email,role,branch_id,created_at")
-          .eq("email", configuredEmail)
-          .limit(1);
-      }
-
-      const { data: userRows, error: userError } = await userQuery;
-      if (userError) throw userError;
-      const activeUser = userRows?.[0] as DashboardUser | undefined;
-
-      const { data: branchRows, error: branchesError } = await client
-        .from("branches")
-        .select("id,name,city,manager_email,created_at")
-        .order("created_at", { ascending: true });
-
-      if (branchesError) throw branchesError;
-
-      const availableBranches = (branchRows ?? []) as Branch[];
-      setBranches(availableBranches);
-
-      if (!activeUser) {
-        setUser(null);
-        setBranch(availableBranches[0] ?? null);
-        setFeedback([]);
-        setDrafts([]);
-        setAlerts([]);
-        setTeamUsers([]);
-        return;
-      }
-
-      const activeBranch = availableBranches.find((item) => item.id === activeUser.branch_id) ?? null;
-
-      const { data: feedbackData, error: feedbackError } = await client
-        .from("feedback")
-        .select("id,branch_id,job_id,phone,channel,raw_text,sentiment,severity,confidence,is_repeat_negative,status,created_at,updated_at")
-        .eq("branch_id", activeUser.branch_id)
-        .order("created_at", { ascending: false });
-      if (feedbackError) throw feedbackError;
-
-      const feedbackIds = (feedbackData ?? []).map((item) => item.id);
-      const draftsQuery = client
-        .from("drafts")
-        .select("id,feedback_id,draft_text,sent,sent_at,created_at")
-        .order("created_at", { ascending: false });
-      const { data: draftData, error: draftError } = feedbackIds.length
-        ? await draftsQuery.in("feedback_id", feedbackIds)
-        : { data: [], error: null };
-      if (draftError) throw draftError;
-
-      const { data: alertData, error: alertError } = await client
-        .from("alerts")
-        .select("id,feedback_id,branch_id,triggered_at,acknowledged,acknowledged_by,acknowledged_at")
-        .eq("branch_id", activeUser.branch_id)
-        .order("triggered_at", { ascending: false });
-      if (alertError) throw alertError;
-
-      const { data: usersData, error: usersError } = await client
-        .from("dashboard_users")
-        .select("id,name,email,role,branch_id,created_at")
-        .eq("branch_id", activeUser.branch_id)
-        .order("created_at", { ascending: true });
-      if (usersError) throw usersError;
-
-      setUser(activeUser);
-      setBranch(activeBranch);
-      setFeedback((feedbackData ?? []) as FeedbackRecord[]);
-      setDrafts((draftData ?? []) as DraftResponse[]);
-      setAlerts((alertData ?? []) as AlertRecord[]);
-      setTeamUsers((usersData ?? []) as DashboardUser[]);
+      const payload = await readDashboardPayload();
+      setUser(payload.user);
+      setBranch(payload.branch);
+      setBranches(payload.branches);
+      setFeedback(payload.feedback);
+      setDrafts(payload.drafts);
+      setAlerts(payload.alerts);
+      setTeamUsers(payload.teamUsers);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "Unable to load dashboard data.");
     } finally {
@@ -200,12 +147,6 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
   }, []);
 
   React.useEffect(() => {
-    if (!hasSupabaseConfig) {
-      setError("Supabase is not configured. Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY.");
-      setLoading(false);
-      return;
-    }
-
     void load();
   }, [load]);
 
@@ -217,24 +158,16 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
       branch,
       branches,
       canManage,
-      configMissing: !hasSupabaseConfig,
+      configMissing: false,
       async createJobComplete(input) {
         const branchId = input.branchId || user?.branch_id || branch?.id;
         if (!branchId) throw new Error("Create a branch in Supabase before completing jobs.");
-        const webhookUrl = process.env.NEXT_PUBLIC_N8N_JOB_COMPLETE_WEBHOOK_URL;
-        if (!webhookUrl) throw new Error("NEXT_PUBLIC_N8N_JOB_COMPLETE_WEBHOOK_URL is not configured.");
-
-        const response = await fetch(webhookUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            branch_id: branchId,
-            job_id: input.jobId,
-            phone: input.phone,
-          }),
+        await sendDashboardAction({
+          branchId,
+          jobId: input.jobId,
+          phone: input.phone,
+          type: "complete_job",
         });
-
-        if (!response.ok) throw new Error("Could not notify the automation webhook.");
         await load();
       },
       drafts,
@@ -242,79 +175,45 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
       feedback,
       async inviteUser(input) {
         if (!user || !canManage) throw new Error("Only managers can manage team members.");
-        const client = assertSupabase();
-        const { error: insertError } = await client.from("dashboard_users").insert({
-          branch_id: user.branch_id,
+        await sendDashboardAction({
           email: input.email,
           name: input.name,
           role: input.role,
+          type: "invite_user",
         });
-        if (insertError) throw insertError;
         await load();
       },
       loading,
       async markAlertAcknowledged(alertId) {
         if (!user || !canManage) throw new Error("Only managers can acknowledge alerts.");
-        const client = assertSupabase();
-        const { error: updateError } = await client
-          .from("alerts")
-          .update({
-            acknowledged: true,
-            acknowledged_by: user.email,
-            acknowledged_at: new Date().toISOString(),
-          })
-          .eq("id", alertId)
-          .eq("branch_id", user.branch_id);
-        if (updateError) throw updateError;
+        await sendDashboardAction({ alertId, type: "acknowledge_alert" });
         await load();
       },
       async markDraftSent(feedbackId) {
         if (!canManage) throw new Error("Only managers can mark drafts as sent.");
-        const client = assertSupabase();
-        const { error: updateError } = await client
-          .from("drafts")
-          .update({ sent: true, sent_at: new Date().toISOString() })
-          .eq("feedback_id", feedbackId);
-        if (updateError) throw updateError;
+        await sendDashboardAction({ feedbackId, type: "mark_draft_sent" });
         await load();
       },
       refresh: load,
       async removeUser(userId) {
         if (!user || !canManage) throw new Error("Only managers can remove users.");
-        const client = assertSupabase();
-        const { error: deleteError } = await client
-          .from("dashboard_users")
-          .delete()
-          .eq("id", userId)
-          .eq("branch_id", user.branch_id);
-        if (deleteError) throw deleteError;
+        await sendDashboardAction({ type: "remove_user", userId });
         await load();
       },
       async routeReview(feedbackId, input) {
         if (!user || !canManage) throw new Error("Only managers can route reviewed feedback.");
-        const client = assertSupabase();
-        const { error: updateError } = await client
-          .from("feedback")
-          .update({
-            sentiment: input.sentiment,
-            severity: input.severity,
-            status: routeFor(input.sentiment, input.severity),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", feedbackId)
-          .eq("branch_id", user.branch_id);
-        if (updateError) throw updateError;
+        await sendDashboardAction({
+          feedbackId,
+          sentiment: input.sentiment,
+          severity: input.severity,
+          type: "route_review",
+        });
         await load();
       },
       teamUsers,
       async updateDraft(feedbackId, draftText) {
         if (!canManage) throw new Error("Only managers can edit drafts.");
-        const client = assertSupabase();
-        const existingDraft = drafts.find((draft) => draft.feedback_id === feedbackId);
-        const result = existingDraft
-          ? await client.from("drafts").update({ draft_text: draftText }).eq("id", existingDraft.id)
-          : await client.from("drafts").insert({ feedback_id: feedbackId, draft_text: draftText });
-        if (result.error) throw result.error;
+        await sendDashboardAction({ draftText, feedbackId, type: "update_draft" });
         await load();
       },
       user,

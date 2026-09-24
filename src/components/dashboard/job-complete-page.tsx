@@ -6,7 +6,6 @@ import { CheckCircle2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "@/components/ui/toaster";
 import { useDashboardData } from "@/components/dashboard/dashboard-data-provider";
 
@@ -18,7 +17,7 @@ function generateJobId() {
 }
 
 export function JobCompletePage() {
-  const { branch, branches, createJobComplete, user } = useDashboardData();
+  const { branch, createJobComplete, user } = useDashboardData();
   const fallbackBranchId = branch?.id ?? user?.branch_id ?? "";
   const [branchId, setBranchId] = React.useState(fallbackBranchId);
   const [jobId, setJobId] = React.useState(() => generateJobId());
@@ -39,9 +38,9 @@ export function JobCompletePage() {
       await createJobComplete({ branchId, jobId, phone });
       setJobId(generateJobId());
       setPhone("");
-      setMessage("Job completed. The feedback request automation has been triggered.");
-      toast.success("Feedback request triggered", {
-        description: "The completed job was sent to the AutoCare automation workflow.",
+      setMessage("Job marked as complete.");
+      toast.success("Job marked as complete", {
+        description: "AutoCare will request feedback from this customer.",
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unable to trigger the feedback workflow.";
@@ -58,7 +57,7 @@ export function JobCompletePage() {
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#858585]">Staff entry point</p>
         <h1 className="text-[32px] font-extrabold tracking-[-0.04em] text-white">Complete a job</h1>
         <p className="mt-2 max-w-2xl text-[14px] font-semibold leading-relaxed text-[#858585]">
-          Submit a completed repair job to start the WhatsApp feedback loop for this branch.
+          Tell AutoCare this customer's service is complete. The feedback workflow starts after submission.
         </p>
       </div>
 
@@ -66,19 +65,8 @@ export function JobCompletePage() {
         <form className="grid gap-5" onSubmit={handleSubmit}>
           <div>
             <Label>Branch</Label>
-            <Select value={branchId} onValueChange={setBranchId} disabled={!branches.length}>
-              <SelectTrigger className="mt-2">
-                <SelectValue placeholder={branches.length ? "Select branch" : "No branches found"} />
-              </SelectTrigger>
-              <SelectContent>
-                {branches.map((item) => (
-                  <SelectItem key={item.id} value={item.id}>
-                    {item.name}
-                    {item.city ? ` · ${item.city}` : ""}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Input className="mt-2" value={branch ? `${branch.name}${branch.city ? ` · ${branch.city}` : ""}` : "Assigned branch"} disabled readOnly />
+            <p className="mt-2 text-[12px] font-semibold text-[#858585]">Locked to your AutoCare branch.</p>
           </div>
           <div>
             <Label htmlFor="job-id">Job reference / ID</Label>
@@ -100,7 +88,7 @@ export function JobCompletePage() {
           <CheckCircle2 className="mb-4 size-8 text-[#ec3042]" />
           <h2 className="text-xl font-extrabold text-white">What happens next?</h2>
           <p className="mt-3 text-[14px] font-semibold leading-relaxed text-[#858585]">
-            n8n creates or updates the pending feedback record, sends the WhatsApp opener, and waits for the customer reply. The dashboard will show the routed feedback after the automation scores it.
+            AutoCare records the completed job and the external feedback workflow handles customer outreach. Routed feedback appears in the queues after it is scored.
           </p>
           <div className="mt-5 rounded-[12px] border border-[#3a3a3a] p-4">
             <p className="text-[12px] font-semibold uppercase tracking-[0.08em] text-[#858585]">Logged in as</p>

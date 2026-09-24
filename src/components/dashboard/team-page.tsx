@@ -42,6 +42,7 @@ export function TeamPage() {
   }
 
   async function handleRemove(userId: string, userName: string) {
+    if (!window.confirm(`Remove ${userName} from this branch dashboard?`)) return;
     try {
       await removeUser(userId);
       setMessage("Team member removed.");
