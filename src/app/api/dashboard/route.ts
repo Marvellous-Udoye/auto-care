@@ -21,6 +21,32 @@ function dashboardError(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status });
 }
 
+function getErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error) return error.message;
+  if (error && typeof error === "object") {
+    const details = error as {
+      code?: string;
+      details?: string | null;
+      hint?: string | null;
+      message?: string;
+    };
+    return [
+      details.message,
+      details.code ? `code: ${details.code}` : null,
+      details.details ? `details: ${details.details}` : null,
+      details.hint ? `hint: ${details.hint}` : null,
+    ].filter(Boolean).join(" · ") || fallback;
+  }
+  return fallback;
+}
+
+function normalizePhone(phone: string) {
+  const trimmed = phone.trim();
+  const hasLeadingPlus = trimmed.startsWith("+");
+  const digits = trimmed.replace(/\D/g, "");
+  return hasLeadingPlus ? `+${digits}` : digits;
+}
+
 async function getDashboardScope() {
   const client = createSupabaseServerClient();
   const configuredEmail = process.env.DASHBOARD_USER_EMAIL ?? process.env.NEXT_PUBLIC_DASHBOARD_USER_EMAIL;
@@ -124,7 +150,7 @@ export async function GET() {
       user,
     });
   } catch (error) {
-    return dashboardError(error instanceof Error ? error.message : "Unable to load dashboard data.", 500);
+    return dashboardError(getErrorMessage(error, "Unable to load dashboard data."), 500);
   }
 }
 
@@ -152,11 +178,17 @@ export async function POST(request: Request) {
         body: JSON.stringify({
           branch_id: jobBranchId,
           job_id: action.jobId,
-          phone: action.phone,
+          phone: normalizePhone(action.phone),
         }),
       });
 
-      if (!response.ok) return dashboardError("Could not notify the automation webhook.", 502);
+      if (!response.ok) {
+        const detail = await response.text().catch(() => "");
+        return dashboardError(
+          `Could not notify the automation webhook. n8n returned ${response.status}${detail ? `: ${detail.slice(0, 240)}` : "."}`,
+          502,
+        );
+      }
       return NextResponse.json({ ok: true });
     }
 
@@ -244,6 +276,6 @@ export async function POST(request: Request) {
 
     return dashboardError("Unsupported dashboard action.");
   } catch (error) {
-    return dashboardError(error instanceof Error ? error.message : "Unable to complete dashboard action.", 500);
+    return dashboardError(getErrorMessage(error, "Unable to complete dashboard action."), 500);
   }
 }

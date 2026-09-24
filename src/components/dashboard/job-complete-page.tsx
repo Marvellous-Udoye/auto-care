@@ -13,7 +13,7 @@ function generateJobId() {
   const date = new Date();
   const stamp = date.toISOString().slice(0, 10).replaceAll("-", "");
   const suffix = Math.floor(1000 + Math.random() * 9000);
-  return `AC-${stamp}-${suffix}`;
+  return `JOB-${stamp}-${suffix}`;
 }
 
 export function JobCompletePage() {
