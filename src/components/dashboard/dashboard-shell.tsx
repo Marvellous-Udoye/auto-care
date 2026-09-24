@@ -318,9 +318,9 @@ export function DashboardShell({ children }: { children: ReactNode }) {
         className="min-h-screen px-4 pb-8 pt-[96px] transition-[margin-left] duration-300 md:ml-[var(--dashboard-sidebar-offset)] md:px-6"
       >
         {configMissing ? (
-          <DashboardState title="Supabase is not configured" description="Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to load the live dashboard." />
+          <DashboardState title="Supabase is not configured" description="Add NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY" />
         ) : loading ? (
-          <DashboardState title="Loading dashboard" description="Fetching branch-scoped feedback data from Supabase." />
+          <DashboardState title="Loading dashboard" description="Fetching data." />
         ) : error ? (
           <DashboardState title="Dashboard data unavailable" description={error} action={<Button onClick={() => void refresh()} className="mt-5 rounded-full bg-[#ec3042] px-5 text-white hover:bg-[#d92b3b]">Retry</Button>} />
         ) : (
