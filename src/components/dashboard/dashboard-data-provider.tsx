@@ -64,9 +64,10 @@ export type AlertRecord = {
 type DashboardContextValue = {
   alerts: AlertRecord[];
   branch: Branch | null;
+  branches: Branch[];
   canManage: boolean;
   configMissing: boolean;
-  createJobComplete: (input: { jobId: string; phone: string }) => Promise<void>;
+  createJobComplete: (input: { branchId?: string; jobId: string; phone: string }) => Promise<void>;
   drafts: DraftResponse[];
   error: string | null;
   feedback: FeedbackRecord[];
@@ -99,6 +100,7 @@ function routeFor(sentiment: Sentiment, severity: number): FeedbackStatus {
 export function DashboardDataProvider({ children }: { children: React.ReactNode }) {
   const [alerts, setAlerts] = React.useState<AlertRecord[]>([]);
   const [branch, setBranch] = React.useState<Branch | null>(null);
+  const [branches, setBranches] = React.useState<Branch[]>([]);
   const [drafts, setDrafts] = React.useState<DraftResponse[]>([]);
   const [error, setError] = React.useState<string | null>(null);
   const [feedback, setFeedback] = React.useState<FeedbackRecord[]>([]);
@@ -130,17 +132,20 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
       const { data: userRows, error: userError } = await userQuery;
       if (userError) throw userError;
       const activeUser = userRows?.[0] as DashboardUser | undefined;
+
+      const { data: branchRows, error: branchesError } = await client
+        .from("branches")
+        .select("id,name,city,manager_email,created_at")
+        .order("created_at", { ascending: true });
+
+      if (branchesError) throw branchesError;
+
+      const availableBranches = (branchRows ?? []) as Branch[];
+      setBranches(availableBranches);
+
       if (!activeUser) {
-        const { data: branchRows, error: branchesError } = await client
-          .from("branches")
-          .select("id,name,city,manager_email,created_at")
-          .order("created_at", { ascending: true })
-          .limit(1);
-
-        if (branchesError) throw branchesError;
-
         setUser(null);
-        setBranch((branchRows?.[0] as Branch | undefined) ?? null);
+        setBranch(availableBranches[0] ?? null);
         setFeedback([]);
         setDrafts([]);
         setAlerts([]);
@@ -148,12 +153,7 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
         return;
       }
 
-      const { data: branchData, error: branchError } = await client
-        .from("branches")
-        .select("id,name,city,manager_email,created_at")
-        .eq("id", activeUser.branch_id)
-        .single();
-      if (branchError) throw branchError;
+      const activeBranch = availableBranches.find((item) => item.id === activeUser.branch_id) ?? null;
 
       const { data: feedbackData, error: feedbackError } = await client
         .from("feedback")
@@ -187,7 +187,7 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
       if (usersError) throw usersError;
 
       setUser(activeUser);
-      setBranch(branchData as Branch);
+      setBranch(activeBranch);
       setFeedback((feedbackData ?? []) as FeedbackRecord[]);
       setDrafts((draftData ?? []) as DraftResponse[]);
       setAlerts((alertData ?? []) as AlertRecord[]);
@@ -215,10 +215,11 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
     return {
       alerts,
       branch,
+      branches,
       canManage,
       configMissing: !hasSupabaseConfig,
       async createJobComplete(input) {
-        const branchId = user?.branch_id ?? branch?.id;
+        const branchId = input.branchId || user?.branch_id || branch?.id;
         if (!branchId) throw new Error("Create a branch in Supabase before completing jobs.");
         const webhookUrl = process.env.NEXT_PUBLIC_N8N_JOB_COMPLETE_WEBHOOK_URL;
         if (!webhookUrl) throw new Error("NEXT_PUBLIC_N8N_JOB_COMPLETE_WEBHOOK_URL is not configured.");
@@ -318,7 +319,7 @@ export function DashboardDataProvider({ children }: { children: React.ReactNode 
       },
       user,
     };
-  }, [alerts, branch, drafts, error, feedback, load, loading, teamUsers, user]);
+  }, [alerts, branch, branches, drafts, error, feedback, load, loading, teamUsers, user]);
 
   return <DashboardDataContext.Provider value={value}>{children}</DashboardDataContext.Provider>;
 }

@@ -6,14 +6,28 @@ import { CheckCircle2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDashboardData } from "@/components/dashboard/dashboard-data-provider";
 
+function generateJobId() {
+  const date = new Date();
+  const stamp = date.toISOString().slice(0, 10).replaceAll("-", "");
+  const suffix = Math.floor(1000 + Math.random() * 9000);
+  return `AC-${stamp}-${suffix}`;
+}
+
 export function JobCompletePage() {
-  const { branch, createJobComplete, user } = useDashboardData();
-  const [jobId, setJobId] = React.useState("");
+  const { branch, branches, createJobComplete, user } = useDashboardData();
+  const fallbackBranchId = branch?.id ?? user?.branch_id ?? "";
+  const [branchId, setBranchId] = React.useState(fallbackBranchId);
+  const [jobId, setJobId] = React.useState(() => generateJobId());
   const [phone, setPhone] = React.useState("");
   const [message, setMessage] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!branchId && fallbackBranchId) setBranchId(fallbackBranchId);
+  }, [branchId, fallbackBranchId]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -21,8 +35,8 @@ export function JobCompletePage() {
     setSubmitting(true);
 
     try {
-      await createJobComplete({ jobId, phone });
-      setJobId("");
+      await createJobComplete({ branchId, jobId, phone });
+      setJobId(generateJobId());
       setPhone("");
       setMessage("Job completed. The feedback request automation has been triggered.");
     } catch (error) {
@@ -46,17 +60,30 @@ export function JobCompletePage() {
         <form className="grid gap-5" onSubmit={handleSubmit}>
           <div>
             <Label>Branch</Label>
-            <Input className="mt-2" value={branch?.name ?? "Assigned branch"} disabled readOnly />
+            <Select value={branchId} onValueChange={setBranchId} disabled={!branches.length}>
+              <SelectTrigger className="mt-2">
+                <SelectValue placeholder={branches.length ? "Select branch" : "No branches found"} />
+              </SelectTrigger>
+              <SelectContent>
+                {branches.map((item) => (
+                  <SelectItem key={item.id} value={item.id}>
+                    {item.name}
+                    {item.city ? ` · ${item.city}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <Label htmlFor="job-id">Job reference / ID</Label>
-            <Input id="job-id" className="mt-2" value={jobId} onChange={(event) => setJobId(event.target.value)} placeholder="JOB-8492" required />
+            <Input id="job-id" className="mt-2" value={jobId} readOnly />
+            <p className="mt-2 text-[12px] font-semibold text-[#858585]">Generated automatically for the automation payload.</p>
           </div>
           <div>
             <Label htmlFor="phone">Customer phone number</Label>
             <Input id="phone" className="mt-2" value={phone} onChange={(event) => setPhone(event.target.value)} placeholder="+2348012345678" required />
           </div>
-          <Button disabled={submitting} className="h-12 w-fit rounded-[13px] bg-[#ec3042] px-6 font-extrabold text-white shadow-[0_12px_24px_rgb(236_48_66/22%)] hover:bg-[#d92b3b]">
+          <Button disabled={submitting || !branchId} className="h-12 w-fit rounded-[13px] bg-[#ec3042] px-6 font-extrabold text-white shadow-[0_12px_24px_rgb(236_48_66/22%)] hover:bg-[#d92b3b]">
             <Send className="size-4" /> {submitting ? "Triggering..." : "Trigger feedback request"}
           </Button>
           {message ? (
